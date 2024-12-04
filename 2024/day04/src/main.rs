@@ -42,11 +42,16 @@ impl FromStr for CharMap {
     }
 }
 
+const N: i64 = -1;
+const W: i64 = -1;
+const S: i64 =  1;
+const E: i64 =  1;
+
 fn solve_part_one(char_map: &CharMap) -> u64 {
     let mut num_words = 0u64;
 
     let options: [(i64, i64); 8] = [
-        (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)
+        (0, E), (S, E), (S, 0), (S, W), (0, W), (N, W), (N, 0), (N, E)
     ];
 
     for Pos(xrow, xcol) in char_map.x.iter() {
@@ -68,11 +73,6 @@ fn solve_part_one(char_map: &CharMap) -> u64 {
 
 fn solve_part_two(char_map: &CharMap) -> u64 {
     let mut num_words = 0u64;
-
-    const N: i64 = -1;
-    const W: i64 = -1;
-    const S: i64 =  1;
-    const E: i64 =  1;
 
     let options: [[(i64, i64); 2]; 4] = [
         [(S, E), (S, W)],
