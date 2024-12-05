@@ -80,12 +80,12 @@ mod test {
                          1 3 6 7 9";
 
     #[test]
-    fn part_one() {
+    fn day02_part_one() {
         assert_eq!(solve(INPUT, Dampener::Disabled), 2);
     }
 
     #[test]
-    fn part_two() {
+    fn day02_part_two() {
         assert_eq!(solve(INPUT, Dampener::Enabled), 4);
     }
 }

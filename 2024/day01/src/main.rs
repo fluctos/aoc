@@ -55,16 +55,19 @@ fn main() {
 mod test {
     use super::*;
 
+    const INPUT: &str = "3   4\n\
+                         4   3\n\
+                         2   5\n\
+                         1   3\n\
+                         3   9\n\
+                         3   3";
     #[test]
-    fn day01_test_case() {
-        let input = "3   4\n\
-                     4   3\n\
-                     2   5\n\
-                     1   3\n\
-                     3   9\n\
-                     3   3";
+    fn day01_part_one() {
+        assert_eq!(solve_part_one(INPUT), 11);
+    }
 
-        assert_eq!(solve_part_one(input), 11);
-        assert_eq!(solve_part_two(input), 31);
+    #[test]
+    fn day01_part_two() {
+        assert_eq!(solve_part_two(INPUT), 31);
     }
 }
