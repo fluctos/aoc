@@ -122,12 +122,12 @@ mod test {
                          MAMMMXMMMM\n\
                          MXMXAXMASX";
     #[test]
-    fn part_one() {
+    fn day04_part_one() {
         assert_eq!(solve_part_one(&CharMap::from_str(INPUT).unwrap()), 18);
     }
 
     #[test]
-    fn part_two() {
+    fn day04_part_two() {
         assert_eq!(solve_part_two(&CharMap::from_str(INPUT).unwrap()), 9);
     }
 

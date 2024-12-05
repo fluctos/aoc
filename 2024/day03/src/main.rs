@@ -46,12 +46,12 @@ mod test {
     const INPUT_PART_TWO: &str = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
 
     #[test]
-    fn part_one() {
+    fn day03_part_one() {
         assert_eq!(solve_part_one(INPUT_PART_ONE), 161);
     }
 
     #[test]
-    fn part_two() {
+    fn day03_part_two() {
         assert_eq!(solve_part_two(INPUT_PART_TWO), 48);
     }
 
