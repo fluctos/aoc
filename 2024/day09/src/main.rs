@@ -67,8 +67,71 @@ fn solve_part_one(data: &str) -> u64 {
     result
 }
 
+#[derive(Debug)]
+struct Gap {
+    start_idx: usize,
+    size: usize,
+}
+
 fn solve_part_two(data: &str) -> u64 {
-    0
+    let mut gaps: Vec<Gap> = data
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as u8)
+        .enumerate()
+        .scan(0usize, |acc, (idx, num)| {
+            let result = Some((idx, *acc, num));
+            *acc += num as usize;
+            result
+        })
+        .filter_map(|(idx, offset, num)| {
+            match idx % 2 {
+                0 => None,
+                1 => Some(Gap{start_idx: offset, size: num as usize}),
+                _ => unreachable!(),
+            }
+        })
+        .collect();
+
+    let num_blocks: usize = data
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as usize)
+        .sum();
+
+    let rev_iter = data
+        .chars()
+        .map(|c| c.to_digit(10).unwrap() as usize)
+        .rev()
+        .enumerate()
+        .scan(num_blocks, |acc, (idx, num)| {
+            *acc -= num;
+            let rev_idx = data.len() - 1 - idx;
+            match rev_idx % 2 {
+                0 => Some((*acc, Some(rev_idx / 2), num)),
+                1 => Some((*acc, None, num)),
+                _ => unreachable!(),
+            }
+        })
+        .filter(|(_, opt, _)| opt.is_some())
+        .map(|(idx, opt, span)| (idx, opt.unwrap(), span));
+
+    let mut result = 0u64;
+    for (idx, num, span) in rev_iter {
+        let mut new_idx = idx;
+        for gap in gaps.iter_mut() {
+            if gap.start_idx < idx && span <= gap.size {
+                new_idx = gap.start_idx;
+                gap.start_idx += span;
+                gap.size -= span;
+                break;
+            }
+        }
+
+        (0..span as u64).for_each(|n| {
+            result += (new_idx as u64 + n) * num as u64;
+        });
+    }
+
+    result
 }
 
 fn main() {
@@ -92,6 +155,13 @@ mod test {
 
     #[test]
     fn day09_part_two() {
-        assert_eq!(solve_part_two(INPUT), 0);
+        assert_eq!(solve_part_two(INPUT), 2858);
+    }
+
+    const INPUT_2: &str = "233313312141413140202333133121414131402";
+
+    #[test]
+    fn day09_part_two_2() {
+        assert_eq!(solve_part_two(INPUT_2), 23423);
     }
 }
