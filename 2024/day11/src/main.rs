@@ -19,35 +19,32 @@ fn split_number(number: u64) -> (u64, u64) {
     (number / mask, number % mask)
 }
 
-fn count_stones(stone: (u64, u64), mut cache: HashMap<(u64, u64), u64>) -> (u64, HashMap<(u64, u64), u64>) {
-    if let Some(&num_stones) = cache.get(&stone) {
-        return (num_stones, cache)
-    }
-
+fn count_stones(stone: (u64, u64), cache: &mut HashMap<(u64, u64), u64>) -> u64 {
     let (number, steps) = stone;
 
     if steps == 0 {
-        return (1, cache);
+        return 1;
     }
 
-    let (num_stones, tmp_cache) = match number {
+    if let Some(&num_stones) = cache.get(&stone) {
+        return num_stones
+    }
+
+    let num_stones = match number {
         0 => count_stones((1, steps - 1), cache),
         n => match count_digits(n) % 2 {
             0 => {
                 let (left, right) = split_number(n);
-                let (l_count, tmp_cache) = count_stones((left, steps - 1), cache);
-                let (r_count, tmp_cache) = count_stones((right, steps - 1), tmp_cache);
-                (l_count + r_count, tmp_cache)
+                count_stones((left, steps - 1), cache) + count_stones((right, steps - 1), cache)
             },
             1 => count_stones((n * 2024, steps - 1), cache),
             _ => unreachable!(),
         },
     };
 
-    cache = tmp_cache;
     cache.insert(stone, num_stones);
 
-    (num_stones, cache)
+    num_stones
 }
 
 fn solve(data: &str, steps: u64) -> u64 {
@@ -60,15 +57,9 @@ fn solve(data: &str, steps: u64) -> u64 {
     // Part two pushes cache towards ~130k entries
     let mut cache: HashMap<(u64, u64), u64> = HashMap::new();
 
-    let mut result = 0u64;
-    let mut num_stones;
-
-    for stone in stones {
-        (num_stones, cache) = count_stones(stone, cache);
-        result += num_stones;
-    }
-
-    result
+    stones
+        .into_iter()
+        .fold(0_u64, |acc, stone| acc + count_stones(stone, &mut cache))
 }
 
 fn solve_part_one(data: &str) -> u64 {
