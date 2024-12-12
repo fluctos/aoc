@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 fn count_digits(number: u64) -> u32 {
     let mut digits = 1_u32;
     let mut num = number;
@@ -17,33 +19,56 @@ fn split_number(number: u64) -> (u64, u64) {
     (number / mask, number % mask)
 }
 
-fn solve(data: &str, max_iterations: usize) -> u64 {
-    let mut stones = data
-        .lines()
-        .flat_map(|line| line.split_whitespace())
-        .map(|num| (0_usize, num.parse::<u64>().unwrap()))
-        .collect::<Vec<_>>();
-
-    let mut num_stones = stones.len();
-
-    while let Some((iterations, mut stone)) = stones.pop() {
-        for iter in iterations..max_iterations {
-            let num_digits = count_digits(stone);
-            stone = match (stone, num_digits % 2) {
-                (0, _) => 1,
-                (_, 0) => {
-                    let (left, right) = split_number(stone);
-                    stones.push((iter + 1, right));
-                    num_stones += 1;
-                    left
-                },
-                (_, 1) => stone * 2024,
-                _ => unreachable!(),
-            };
-        }
+fn count_stones(stone: (u64, u64), mut cache: HashMap<(u64, u64), u64>) -> (u64, HashMap<(u64, u64), u64>) {
+    if let Some(&num_stones) = cache.get(&stone) {
+        return (num_stones, cache)
     }
 
-    num_stones as u64
+    let (number, steps) = stone;
+
+    if steps == 0 {
+        return (1, cache);
+    }
+
+    let (num_stones, tmp_cache) = match number {
+        0 => count_stones((1, steps - 1), cache),
+        n => match count_digits(n) % 2 {
+            0 => {
+                let (left, right) = split_number(n);
+                let (l_count, tmp_cache) = count_stones((left, steps - 1), cache);
+                let (r_count, tmp_cache) = count_stones((right, steps - 1), tmp_cache);
+                (l_count + r_count, tmp_cache)
+            },
+            1 => count_stones((n * 2024, steps - 1), cache),
+            _ => unreachable!(),
+        },
+    };
+
+    cache = tmp_cache;
+    cache.insert(stone, num_stones);
+
+    (num_stones, cache)
+}
+
+fn solve(data: &str, steps: u64) -> u64 {
+    let stones = data
+        .lines()
+        .flat_map(|line| line.split_whitespace())
+        .map(|num| (num.parse::<u64>().unwrap(), steps))
+        .collect::<Vec<_>>();
+
+    // Part two pushes cache towards ~130k entries
+    let mut cache: HashMap<(u64, u64), u64> = HashMap::new();
+
+    let mut result = 0u64;
+    let mut num_stones;
+
+    for stone in stones {
+        (num_stones, cache) = count_stones(stone, cache);
+        result += num_stones;
+    }
+
+    result
 }
 
 fn solve_part_one(data: &str) -> u64 {
@@ -70,11 +95,6 @@ mod test {
     #[test]
     fn day11_part_one() {
         assert_eq!(solve_part_one(INPUT), 55312);
-    }
-
-    #[test]
-    fn day11_part_two() {
-        assert_eq!(solve_part_two(INPUT), 0);
     }
 
     #[test]
