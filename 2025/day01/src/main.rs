@@ -72,7 +72,7 @@ fn solve_part_two(data: &str) -> Result<u64, Box<dyn Error>> {
 }
 
 fn run() -> Result<(), Box<dyn Error>> {
-    let data = std::fs::read_to_string("day01/input.txt").unwrap();
+    let data = std::fs::read_to_string("day01/input.txt")?;
     let answer_one = solve_part_one(&data)?;
     let answer_two = solve_part_two(&data)?;
 
