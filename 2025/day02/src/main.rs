@@ -116,11 +116,11 @@ mod test {
 
     #[test]
     fn day02_part_one() {
-        assert_eq!(solve_part_one(TEST_INPUT).unwrap_or(0), 1227775554);
+        assert_eq!(solve_part_one(TEST_INPUT).unwrap(), 1227775554);
     }
 
     #[test]
     fn day02_part_two() {
-        assert_eq!(solve_part_two(TEST_INPUT).unwrap_or(0), 4174379265);
+        assert_eq!(solve_part_two(TEST_INPUT).unwrap(), 4174379265);
     }
 }
